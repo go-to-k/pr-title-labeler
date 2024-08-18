@@ -47,7 +47,7 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       MINOR_LABEL: 'minor'
-      MINOR_LABEL_COLOR: '#FEF2C0'
+      MINOR_LABEL_COLOR: '#FBCA04'
       MAJOR_LABEL: 'major'
       MAJOR_LABEL_COLOR: '#D93F0B'
       PATCH_LABEL: 'patch'
