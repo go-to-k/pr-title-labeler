@@ -5,10 +5,11 @@ on:
     types:
       - opened
       - edited
+      - synchronize
       - reopened
 
 permissions:
-  pull-requests: read
+  pull-requests: write
 
 jobs:
   lint:
@@ -40,17 +41,20 @@ jobs:
             client
           requireScope: false
 
-  manage-label:
+  label:
+    name: Manage labels
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       MINOR_LABEL: 'minor'
-      MINOR_LABEL_COLOR: '#C5DEF5'
+      MINOR_LABEL_COLOR: '#FBCA04'
       MAJOR_LABEL: 'major'
       MAJOR_LABEL_COLOR: '#D93F0B'
       PATCH_LABEL: 'patch'
-      PATCH_LABEL_COLOR: '#FEF2C0'
+      PATCH_LABEL_COLOR: '#C5DEF5'
     steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
       - name: Create labels if they do not exist
         run: |
           EXISTING_LABELS=$(gh label list --json name --jq '.[].name')
@@ -66,7 +70,6 @@ jobs:
           if ! echo "$EXISTING_LABELS" | grep -q "$PATCH_LABEL"; then
             gh label create "$PATCH_LABEL" --color "$PATCH_LABEL_COLOR"
           fi
-
       - name: Manage labels based on PR title
         run: |
           TITLE=$(jq -r '.pull_request.title' < "$GITHUB_EVENT_PATH")
@@ -79,6 +82,12 @@ jobs:
           HAS_PATCH_LABEL=$(echo "$LABELS" | grep -q "$PATCH_LABEL" && echo "true" || echo "false")
 
           if [ "$HAS_MAJOR_LABEL" == "true" ]; then
+            if [ "$HAS_PATCH_LABEL" == "true" ];then
+              gh pr edit $PR_NUMBER --remove-label "$PATCH_LABEL"
+            fi
+            if [ "$HAS_MINOR_LABEL" == "true" ];then
+              gh pr edit $PR_NUMBER --remove-label "$MINOR_LABEL"
+            fi
             exit 0
           fi
 
