@@ -68,7 +68,6 @@ jobs:
           if ! echo "$EXISTING_LABELS" | grep -q "$PATCH_LABEL"; then
             gh label create "$PATCH_LABEL" --color "$PATCH_LABEL_COLOR"
           fi
-
       - name: Manage labels based on PR title
         run: |
           TITLE=$(jq -r '.pull_request.title' < "$GITHUB_EVENT_PATH")
