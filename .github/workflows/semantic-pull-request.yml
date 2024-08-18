@@ -51,6 +51,8 @@ jobs:
       PATCH_LABEL: 'patch'
       PATCH_LABEL_COLOR: '#FEF2C0'
     steps:
+      - name: Check out the repository
+        uses: actions/checkout@v3
       - name: Create labels if they do not exist
         run: |
           EXISTING_LABELS=$(gh label list --json name --jq '.[].name')
