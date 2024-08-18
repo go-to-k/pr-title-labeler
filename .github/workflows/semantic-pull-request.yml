@@ -41,7 +41,8 @@ jobs:
             client
           requireScope: false
 
-  manage-label:
+  label:
+    name: Manage labels
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -81,6 +82,12 @@ jobs:
           HAS_PATCH_LABEL=$(echo "$LABELS" | grep -q "$PATCH_LABEL" && echo "true" || echo "false")
 
           if [ "$HAS_MAJOR_LABEL" == "true" ]; then
+            if [ "$HAS_PATCH_LABEL" == "true" ];then
+              gh pr edit $PR_NUMBER --remove-label "$PATCH_LABEL"
+            fi
+            if [ "$HAS_MINOR_LABEL" == "true" ];then
+              gh pr edit $PR_NUMBER --remove-label "$MINOR_LABEL"
+            fi
             exit 0
           fi
 
